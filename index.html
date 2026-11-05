@@ -18,8 +18,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 #startButton{position:absolute;left:31%;top:60%;transform:none;width:67%;height:19%;border:0;border-radius:36px;background:transparent;z-index:10;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #startButton:focus-visible{outline:3px solid #fff;outline-offset:4px}
 #mapScreen{position:relative;align-items:stretch;justify-content:center;width:100%;height:100svh;min-height:100svh;overflow:hidden;background:#0e2b4e}
-.map-frame{position:absolute;width:min(100vw,100svh);height:min(100vw,100svh);left:50%;top:50%;transform:translate(-50%,-50%);line-height:0;overflow:hidden}
-.map-frame img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+.map-frame{position:absolute;inset:0;width:100%;height:100%;line-height:0;overflow:hidden}
+.map-frame img{display:block;width:100%;height:100%;object-fit:fill;object-position:center;pointer-events:none;user-select:none;-webkit-user-drag:none}
 .hotspot{position:absolute;transform:translate(-50%,-50%);width:13%;aspect-ratio:1;border:0;border-radius:50%;background:transparent;z-index:2}
 .hotspot:focus-visible{outline:3px solid white;outline-offset:2px}
 .hotspot.active{box-shadow:0 0 0 3px #fff,0 0 0 7px #f2bb27aa}
@@ -49,7 +49,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .finish-card p{line-height:1.5}
 .reset{position:fixed;top:max(8px,env(safe-area-inset-top));right:8px;z-index:8;border:1px solid #ffffff77;background:#153b6edb;color:#fff;border-radius:20px;padding:7px 10px;font-size:11px}
 @media(max-width:380px){.mission-card{padding:10px}.mission-card h1{font-size:22px}.mission-footer .action{font-size:12px}.action{font-size:14px}}
-@media(min-width:700px){#mapScreen{padding:12px}.map-frame{max-width:500px;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px #0008}}
+@media(min-width:700px){#mapScreen{padding:12px}.map-frame{width:min(100%,500px);height:100%;left:50%;transform:translateX(-50%);border-radius:16px;overflow:hidden;box-shadow:0 10px 40px #0008}}
 </style>
 </head>
 <body>
@@ -61,11 +61,11 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 <section id="mapScreen" class="screen" aria-label="Mapa wyprawy">
   <div class="map-frame">
     <img src="mapaa.png" alt="Mapa wyprawy do Zamku Księcia Henryka">
-    <!-- Cztery punkty na trasie: parking, wejście na szlak, punkt widokowy, zamek -->
-    <button class="hotspot" data-point="0" style="left:42.0%;top:62.0%;width:17%;aspect-ratio:1" aria-label="Misja 1 – parking"></button>
-    <button class="hotspot" data-point="1" style="left:77.0%;top:46.5%;width:17%;aspect-ratio:1" aria-label="Misja 2 – kamienie"></button>
-    <button class="hotspot" data-point="2" style="left:46.0%;top:37.5%;width:17%;aspect-ratio:1" aria-label="Misja 3 – lornetka"></button>
-    <button class="hotspot" data-point="3" style="left:70.0%;top:25.5%;width:17%;aspect-ratio:1" aria-label="Misja 4 – hełm"></button>
+    <!-- Kolejność misji: drogowskaz, skały/Grodno, zamek, rycerska zbroja -->
+    <button class="hotspot" data-point="0" style="left:40.5%;top:67.5%;width:20%;aspect-ratio:1" aria-label="Misja 1 – drogowskaz"></button>
+    <button class="hotspot" data-point="1" style="left:75%;top:51.5%;width:20%;aspect-ratio:1" aria-label="Misja 2 – skalny punkt widokowy Grodno"></button>
+    <button class="hotspot" data-point="2" style="left:82%;top:29%;width:20%;aspect-ratio:1" aria-label="Misja 3 – zamek"></button>
+    <button class="hotspot" data-point="3" style="left:65%;top:37.5%;width:20%;aspect-ratio:1" aria-label="Misja 4 – rycerska zbroja"></button>
   </div>
   <div class="map-top">
     <button id="homeButton">⌂ Start</button>
@@ -76,8 +76,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 <section id="missionScreen" class="screen" aria-label="Karta misji">
   <div class="mission-card">
     <div class="mission-kicker" id="missionKicker">Misja 1 z 4</div>
-    <h1 id="missionTitle">Parking – początek wyprawy</h1>
-    <img class="mission-image" id="missionImage" src="zbroja.png" alt="Ilustracja punktu misji">
+    <h1 id="missionTitle">Drogowskaz – początek szlaku</h1>
+    <img class="mission-image" id="missionImage" src="drogowskaz.png" alt="Ilustracja punktu misji">
     <div class="clue" id="missionClue"></div>
     <div class="action-row">
       <button class="action secondary" id="navigateButton">🧭 Nawiguj</button>
@@ -106,10 +106,10 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 <script>
 const fullRoute="https://maps.app.goo.gl/u5kykgxgEV9MzRjq8?g_st=ic";
 const missions=[
- {name:"Parking – początek wyprawy",image:"zbroja.png",destination:"Parking dla gości Zamku Księcia Henryka, 58-500 Podgórzyn",clue:"Rycerzu, zanim wyruszysz na szlak, przygotuj się do wyprawy. Załóż wyobrażoną zbroję i ruszaj po przygodę!"},
- {name:"Trasa na Zamek Księcia Henryka",image:"drogowskaz.png",destination:"Trasy na Zamek Księcia Henryka, Złoty Widok 7, 58-564 Sosnówka",clue:"Odszukaj drogowskaz i odnajdź właściwą drogę prowadzącą do zamku."},
- {name:"Punkt widokowy – Góra Grodna",image:"grodno.png",destination:"Punkt widokowy – Góra Grodna, szlak pieszy niebieski, 58-500",clue:"Dotrzyj do punktu widokowego. Rozejrzyj się uważnie i podziwiaj górską panoramę!"},
- {name:"Zamek Księcia Henryka",image:"zamek.png",destination:"Zamek Księcia Henryka, 58-500 Staniszów",clue:"To już cel wyprawy! Odkryj zamek i wykonaj ostatnie zadanie."}
+ {name:"Drogowskaz – początek szlaku",image:"drogowskaz.png",destination:"Trasy na Zamek Księcia Henryka, Złoty Widok 7, 58-564 Sosnówka",clue:"Odszukaj drogowskaz i sprawdź, którędy prowadzi szlak do Zamku Księcia Henryka."},
+ {name:"Skalny punkt widokowy – Góra Grodna",image:"grodno.png",destination:"Punkt widokowy – Góra Grodna, szlak pieszy niebieski, 58-500",clue:"Dotrzyj do skalnego punktu widokowego na Górze Grodna. Rozejrzyj się i podziwiaj panoramę!"},
+ {name:"Zamek Księcia Henryka",image:"zamek.png",destination:"Zamek Księcia Henryka, 58-500 Staniszów",clue:"Przed Tobą zamek! Podejdź do niego i odkryj tajemnicę tego niezwykłego miejsca."},
+ {name:"Rycerska zbroja – ostatnia misja",image:"zbroja.png",destination:"Zamek Księcia Henryka, 58-500 Staniszów",clue:"Ostatnie zadanie! Odszukaj rycerską zbroję i zakończ wyprawę jak prawdziwy zdobywca zamku."}
 ];
 const STORAGE_KEY="tajemnicaZamkuHenryka_postep_v1";
 let completed=[],selectedIndex=0,photoReady=false;
