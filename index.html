@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#143c70">
+<title>Tajemnica Zamku Henryka</title>
+<style>
+:root{--navy:#173b70;--blue:#2379c8;--red:#e63e35;--gold:#ffd34d;--cream:#fff8e7;--ink:#26364b;--green:#36a85a}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#102c50;color:#fff}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.screen{display:none;min-height:100svh}
+.screen.active{display:flex}
+#startScreen{position:relative;width:100%;height:100svh;min-height:100svh;overflow:hidden;background:#14539a}
+#startScreen img{width:100%;height:100%;display:block;object-fit:cover;object-position:center}
+#startButton{position:absolute;left:50%;top:89.5%;transform:translate(-50%,-50%);width:78%;height:12%;border:0;border-radius:28px;background:transparent}
+#mapScreen{position:relative;align-items:stretch;justify-content:center;width:100%;height:100svh;min-height:100svh;overflow:hidden;background:#0e2b4e}
+.map-frame{position:relative;width:100vw;height:100svh;flex:0 0 100%;line-height:0}
+.map-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.hotspot{position:absolute;transform:translate(-50%,-50%);width:13%;aspect-ratio:1;border:0;border-radius:50%;background:transparent;z-index:2}
+.hotspot:focus-visible{outline:3px solid white;outline-offset:2px}
+.hotspot.active{box-shadow:0 0 0 3px #fff,0 0 0 7px #f2bb27aa}
+.hotspot.done{box-shadow:0 0 0 4px #35c96a,0 0 0 7px #fff}
+.hotspot.done::after{content:"✓";position:absolute;right:-9%;top:-9%;width:44%;height:44%;border-radius:50%;display:grid;place-items:center;background:#20a94e;color:white;border:2px solid #fff;font-size:clamp(14px,4vw,22px);font-weight:1000;line-height:1}
+.hotspot.locked{opacity:.7;filter:grayscale(.5)}
+.map-top{position:absolute;z-index:5;top:max(10px,env(safe-area-inset-top));left:10px;right:10px;display:flex;justify-content:space-between;pointer-events:none}
+.map-top button{pointer-events:auto;border:1px solid #ffffff88;border-radius:22px;background:#153b6edb;color:#fff;padding:8px 12px;font-weight:800;font-size:12px;box-shadow:0 2px 8px #0005}
+#missionScreen{align-items:center;justify-content:center;padding:18px 12px;background:linear-gradient(160deg,#174c83,#0b2443);overflow:auto}
+.mission-card{width:min(100%,480px);background:var(--cream);color:var(--ink);border:5px solid #e8b83c;border-radius:23px;padding:12px;box-shadow:0 12px 35px #0008}
+.mission-kicker{text-transform:uppercase;letter-spacing:2px;font-weight:950;font-size:11px;color:#a76a16}
+.mission-card h1{font-size:24px;line-height:1.12;margin:7px 0 10px;color:#203b5c}
+.mission-image{display:block;width:100%;height:auto;aspect-ratio:1.25/1;object-fit:cover;object-position:center;border-radius:14px;margin:0 0 10px;border:2px solid #f0d58d}
+.clue{background:#fff1c9;border-left:5px solid #efb82e;border-radius:11px;padding:11px 12px;font-size:14px;line-height:1.35;font-weight:750;margin:9px 0 10px;white-space:pre-line}
+.action-row{display:flex;gap:9px;margin-top:10px}
+.action{border:0;border-radius:13px;padding:12px 8px;font-weight:850;flex:1;min-width:0;font-size:15px}
+.action.primary{background:var(--red);color:#fff;box-shadow:0 3px 0 #a52a26}
+.action.secondary{background:#dcecfb;color:#173d68}
+.action:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}
+#photoStatus{font-size:12px;color:#5d6a5d;margin-top:4px;min-height:0;line-height:1.2}
+.mission-footer{display:flex;gap:8px;margin-top:8px}
+.mission-footer .action{font-size:13px;padding:11px 6px}
+.back{background:transparent;border:1px solid #9eafbf;color:#344b63}
+#finishScreen{align-items:center;justify-content:center;text-align:center;padding:28px;background:linear-gradient(160deg,#1d609e,#0b2443)}
+.finish-card{max-width:430px;background:#fff8e7;color:#203b5c;padding:25px;border:5px solid #e8b83c;border-radius:24px}
+.finish-card h1{font-size:29px}
+.finish-card p{line-height:1.5}
+.reset{position:fixed;top:max(8px,env(safe-area-inset-top));right:8px;z-index:8;border:1px solid #ffffff77;background:#153b6edb;color:#fff;border-radius:20px;padding:7px 10px;font-size:11px}
+@media(max-width:380px){.mission-card{padding:10px}.mission-card h1{font-size:22px}.mission-footer .action{font-size:12px}.action{font-size:14px}}
+@media(min-width:700px){#mapScreen{padding:12px}.map-frame{max-width:500px;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px #0008}}
+</style>
+</head>
+<body>
+<section id="startScreen" class="screen active" aria-label="Ekran startowy">
+  <img src="tloo.png" alt="Tło wyprawy do Zamku Księcia Henryka">
+  <button id="startButton" aria-label="Start wyprawy"></button>
+</section>
+
+<section id="mapScreen" class="screen" aria-label="Mapa wyprawy">
+  <div class="map-frame">
+    <img src="mapaa.png" alt="Mapa wyprawy do Zamku Księcia Henryka">
+    <!-- Cztery punkty na trasie: parking, wejście na szlak, punkt widokowy, zamek -->
+    <button class="hotspot" data-point="0" style="left:41.7%;top:70.0%" aria-label="Misja 1"></button>
+    <button class="hotspot" data-point="1" style="left:79.7%;top:48.0%" aria-label="Misja 2"></button>
+    <button class="hotspot" data-point="2" style="left:35.7%;top:35.0%" aria-label="Misja 3"></button>
+    <button class="hotspot" data-point="3" style="left:72.5%;top:23.0%" aria-label="Misja 4"></button>
+  </div>
+  <div class="map-top">
+    <button id="homeButton">⌂ Start</button>
+    <button id="routeButton">🗺️ Cała trasa</button>
+  </div>
+</section>
+
+<section id="missionScreen" class="screen" aria-label="Karta misji">
+  <div class="mission-card">
+    <div class="mission-kicker" id="missionKicker">Misja 1 z 4</div>
+    <h1 id="missionTitle">Parking – początek wyprawy</h1>
+    <img class="mission-image" id="missionImage" src="zbroja.png" alt="Ilustracja punktu misji">
+    <div class="clue" id="missionClue"></div>
+    <div class="action-row">
+      <button class="action secondary" id="navigateButton">🧭 Nawiguj</button>
+      <button class="action secondary" id="addPhotoButton">📷 Dodaj zdjęcie</button>
+    </div>
+    <input id="photoInput" type="file" accept="image/*" hidden>
+    <div id="photoStatus"></div>
+    <div class="mission-footer">
+      <button class="action back" id="backButton">⬅️ Wróć do mapy</button>
+      <button class="action primary" id="completeButton" disabled>✅ Ukończ misję</button>
+    </div>
+  </div>
+</section>
+
+<section id="finishScreen" class="screen">
+  <div class="finish-card">
+    <div style="font-size:60px">🏰🏆</div>
+    <h1>Wyprawa ukończona!</h1>
+    <p>Wszystkie cztery misje wykonane. Zamek Henryka zdobyty!</p>
+    <button class="action primary" id="finishMapButton">Zobacz mapę</button>
+  </div>
+</section>
+
+<button class="reset" id="resetButton" title="Wyczyść postęp">Reset</button>
+
+<script>
+const fullRoute="https://maps.app.goo.gl/u5kykgxgEV9MzRjq8?g_st=ic";
+const missions=[
+ {name:"Parking – początek wyprawy",image:"zbroja.png",destination:"Parking dla gości Zamku Księcia Henryka, 58-500 Podgórzyn",clue:"Rycerzu, zanim wyruszysz na szlak, przygotuj się do wyprawy. Załóż wyobrażoną zbroję i ruszaj po przygodę!"},
+ {name:"Trasa na Zamek Księcia Henryka",image:"drogowskaz.png",destination:"Trasy na Zamek Księcia Henryka, Złoty Widok 7, 58-564 Sosnówka",clue:"Odszukaj drogowskaz i odnajdź właściwą drogę prowadzącą do zamku."},
+ {name:"Punkt widokowy – Góra Grodna",image:"grodno.png",destination:"Punkt widokowy – Góra Grodna, szlak pieszy niebieski, 58-500",clue:"Dotrzyj do punktu widokowego. Rozejrzyj się uważnie i podziwiaj górską panoramę!"},
+ {name:"Zamek Księcia Henryka",image:"zamek.png",destination:"Zamek Księcia Henryka, 58-500 Staniszów",clue:"To już cel wyprawy! Odkryj zamek i wykonaj ostatnie zadanie."}
+];
+const STORAGE_KEY="tajemnicaZamkuHenryka_postep_v1";
+let completed=[],selectedIndex=0,photoReady=false;
+const $=id=>document.getElementById(id);
+function loadProgress(){try{const a=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");completed=Array.isArray(a)?a.filter(n=>Number.isInteger(n)&&n>=0&&n<4):[]}catch(e){completed=[]}}
+function saveProgress(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(completed))}catch(e){}}
+function activeIndex(){let i=0;while(i<4&&completed.includes(i))i++;return i}
+function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");window.scrollTo(0,0)}
+function renderMap(){const active=activeIndex();document.querySelectorAll(".hotspot").forEach(b=>{const i=Number(b.dataset.point);b.classList.remove("active","done","locked");b.classList.add(completed.includes(i)?"done":i===active?"active":"locked");b.setAttribute("aria-label",`Misja ${i+1}: ${completed.includes(i)?"ukończona":i===active?"aktywna":"zablokowana"}`)})}
+function openMission(i){if(i>activeIndex())return;const done=completed.includes(i);selectedIndex=i;photoReady=false;const m=missions[i];$("missionKicker").textContent=`Misja ${i+1} z 4`;$("missionTitle").textContent=m.name;$("missionClue").textContent=m.clue;$("missionImage").src=m.image;$("missionImage").alt=m.name;$("photoStatus").textContent=done?"✅ Ta misja została już ukończona.":"";$("completeButton").disabled=done;$("completeButton").textContent=done?"✅ Misja ukończona":"✅ Ukończ misję";$("addPhotoButton").disabled=done;$("navigateButton").disabled=false;$("photoInput").value="";showScreen("missionScreen")}
+function acceptPhoto(e){const f=e.target.files&&e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")){$("photoStatus").textContent="Wybierz plik zdjęcia.";return}photoReady=true;$("photoStatus").textContent="✓ Zdjęcie dodane";$("completeButton").disabled=false}
+$("startButton").addEventListener("click",()=>{renderMap();showScreen("mapScreen")});
+document.querySelectorAll(".hotspot").forEach(b=>b.addEventListener("click",()=>openMission(Number(b.dataset.point))));
+$("navigateButton").addEventListener("click",()=>{const q=encodeURIComponent(missions[selectedIndex].destination);location.href=`https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=walking`});
+$("routeButton").addEventListener("click",()=>window.open(fullRoute,"_blank"));
+$("homeButton").addEventListener("click",()=>showScreen("startScreen"));
+$("addPhotoButton").addEventListener("click",()=>$("photoInput").click());
+$("photoInput").addEventListener("change",acceptPhoto);
+$("completeButton").addEventListener("click",()=>{if(!photoReady||selectedIndex!==activeIndex())return;completed.push(selectedIndex);saveProgress();if(activeIndex()>=4){showScreen("finishScreen");return}renderMap();showScreen("mapScreen")});
+$("backButton").addEventListener("click",()=>{renderMap();showScreen("mapScreen")});
+$("finishMapButton").addEventListener("click",()=>{renderMap();showScreen("mapScreen")});
+$("resetButton").addEventListener("click",()=>{if(confirm("Czy wyzerować postęp wyprawy?")){completed=[];saveProgress();renderMap();showScreen("startScreen")}});
+loadProgress();
+</script>
+</body>
+</html>
