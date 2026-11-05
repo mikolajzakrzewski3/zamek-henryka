@@ -17,8 +17,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 /* Duży, responsywny obszar na czerwonym przycisku START. Sama grafika także reaguje na dotyk jako zabezpieczenie przed różnicami viewportu Safari. */
 #startButton{position:absolute;left:31%;top:60%;transform:none;width:67%;height:19%;border:0;border-radius:36px;background:transparent;z-index:10;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #startButton:focus-visible{outline:3px solid #fff;outline-offset:4px}
-#mapScreen{position:relative;align-items:stretch;justify-content:center;width:100%;height:100svh;min-height:100svh;overflow:hidden;background:#0e2b4e}
-.map-frame{position:absolute;inset:0;width:100%;height:100%;line-height:0;overflow:hidden}
+#mapScreen{position:relative;align-items:stretch;justify-content:center;width:100%;height:100dvh;min-height:100dvh;overflow:hidden;background:#0e2b4e}
+.map-frame{position:absolute;left:0;top:0;right:0;bottom:0;width:100vw;height:100dvh;line-height:0;overflow:hidden}
 .map-frame img{display:block;width:100%;height:100%;object-fit:fill;object-position:center;pointer-events:none;user-select:none;-webkit-user-drag:none}
 .hotspot{position:absolute;transform:translate(-50%,-50%);width:13%;aspect-ratio:1;border:0;border-radius:50%;background:transparent;z-index:2}
 .hotspot:focus-visible{outline:3px solid white;outline-offset:2px}
@@ -49,7 +49,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .finish-card p{line-height:1.5}
 .reset{position:fixed;top:max(8px,env(safe-area-inset-top));right:8px;z-index:8;border:1px solid #ffffff77;background:#153b6edb;color:#fff;border-radius:20px;padding:7px 10px;font-size:11px}
 @media(max-width:380px){.mission-card{padding:10px}.mission-card h1{font-size:22px}.mission-footer .action{font-size:12px}.action{font-size:14px}}
-@media(min-width:700px){#mapScreen{padding:12px}.map-frame{width:min(100%,500px);height:100%;left:50%;transform:translateX(-50%);border-radius:16px;overflow:hidden;box-shadow:0 10px 40px #0008}}
+@media(min-width:700px) and (pointer:fine){#mapScreen{padding:12px}.map-frame{width:min(100%,500px);height:100%;left:50%;right:auto;top:0;bottom:0;transform:translateX(-50%);border-radius:16px;overflow:hidden;box-shadow:0 10px 40px #0008}}
 </style>
 </head>
 <body>
