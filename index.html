@@ -18,8 +18,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 #startButton{position:absolute;left:31%;top:60%;transform:none;width:67%;height:19%;border:0;border-radius:36px;background:transparent;z-index:10;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #startButton:focus-visible{outline:3px solid #fff;outline-offset:4px}
 #mapScreen{position:relative;align-items:stretch;justify-content:center;width:100%;height:100svh;min-height:100svh;overflow:hidden;background:#0e2b4e}
-.map-frame{position:relative;width:100vw;height:100svh;flex:0 0 100%;line-height:0}
-.map-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.map-frame{position:absolute;width:min(100vw,100svh);height:min(100vw,100svh);left:50%;top:50%;transform:translate(-50%,-50%);line-height:0;overflow:hidden}
+.map-frame img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
 .hotspot{position:absolute;transform:translate(-50%,-50%);width:13%;aspect-ratio:1;border:0;border-radius:50%;background:transparent;z-index:2}
 .hotspot:focus-visible{outline:3px solid white;outline-offset:2px}
 .hotspot.active{box-shadow:0 0 0 3px #fff,0 0 0 7px #f2bb27aa}
@@ -62,10 +62,10 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
   <div class="map-frame">
     <img src="mapaa.png" alt="Mapa wyprawy do Zamku Księcia Henryka">
     <!-- Cztery punkty na trasie: parking, wejście na szlak, punkt widokowy, zamek -->
-    <button class="hotspot" data-point="0" style="left:41.7%;top:70.0%" aria-label="Misja 1"></button>
-    <button class="hotspot" data-point="1" style="left:79.7%;top:48.0%" aria-label="Misja 2"></button>
-    <button class="hotspot" data-point="2" style="left:35.7%;top:35.0%" aria-label="Misja 3"></button>
-    <button class="hotspot" data-point="3" style="left:72.5%;top:23.0%" aria-label="Misja 4"></button>
+    <button class="hotspot" data-point="0" style="left:42.0%;top:62.0%;width:17%;aspect-ratio:1" aria-label="Misja 1 – parking"></button>
+    <button class="hotspot" data-point="1" style="left:77.0%;top:46.5%;width:17%;aspect-ratio:1" aria-label="Misja 2 – kamienie"></button>
+    <button class="hotspot" data-point="2" style="left:46.0%;top:37.5%;width:17%;aspect-ratio:1" aria-label="Misja 3 – lornetka"></button>
+    <button class="hotspot" data-point="3" style="left:70.0%;top:25.5%;width:17%;aspect-ratio:1" aria-label="Misja 4 – hełm"></button>
   </div>
   <div class="map-top">
     <button id="homeButton">⌂ Start</button>
